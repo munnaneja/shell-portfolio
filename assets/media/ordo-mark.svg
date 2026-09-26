@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" role="img" aria-label="Ordo mark">
+  <!-- transparent background: drops onto any colour -->
+  <g transform="translate(200 200)" fill="none" stroke-linecap="round" stroke-width="42">
+    <path d="M 0 -150 A 150 150 0 0 1 150 0"  stroke="#e9eaee"/>
+    <path d="M 150 0 A 150 150 0 0 1 0 150"   stroke="#c2c5cd"/>
+    <path d="M 0 150 A 150 150 0 0 1 -150 0"  stroke="#9a9eaa"/>
+    <path d="M -150 0 A 150 150 0 0 1 0 -150" stroke="#e0a458"/>
+    <circle cx="0" cy="-150" r="15" fill="#e0a458" stroke="none"/>
+  </g>
+</svg>

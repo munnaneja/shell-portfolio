@@ -1,0 +1,11 @@
+# local scratch
+*.bak
+projects (*).js
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# full-resolution originals, if they ever land back in here
+assets/media/_originals/

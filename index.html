@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Munn Aneja — Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#30313d;
+    --panel:#383a47;
+    --line:#494b59;
+    --line-soft:#3d3f4c;
+    --text:#edeef2;
+    --muted:#a6aab6;
+    --dim:#7c8190;
+    --win:#5fd18a;
+    --fail:#f08b8b;
+    --accent:#e0a458;
+    --rope:#b98a5c;
+    --rope-dark:#7d5a38;
+    --ink:#2b2c36;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  /* buttons and form controls don't inherit the page font on their own */
+  button,input,select,textarea,[contenteditable]{font-family:'Inter',system-ui,-apple-system,sans-serif}
+  body{
+    background:var(--bg);color:var(--text);
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    font-weight:300;line-height:1.6;letter-spacing:-.005em;
+    -webkit-font-smoothing:antialiased;overflow:hidden;
+  }
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(900px 520px at 50% -8%, rgba(224,164,88,.09), transparent 70%),
+      radial-gradient(760px 600px at 100% 38%, rgba(120,150,255,.06), transparent 70%)}
+
+  /* ---------- deck ---------- */
+  #deck{position:fixed;inset:0;z-index:1}
+  .slide{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;
+    display:flex;align-items:center;justify-content:center;padding:74px 24px;
+    opacity:0;pointer-events:none;transform:translateY(40px);
+    transition:opacity .5s ease,transform .5s ease}
+  .slide.active{opacity:1;pointer-events:auto;transform:none}
+  .inner{width:100%;max-width:1320px;position:relative;z-index:2}
+
+  /* ---------- hero ---------- */
+  .hero{text-align:center}
+  .avatar{width:150px;height:150px;border-radius:50%;object-fit:cover;border:1px solid var(--line);
+    box-shadow:0 0 0 8px rgba(255,255,255,.03),0 30px 70px -26px rgba(0,0,0,.7);margin-bottom:28px}
+  .hero h1{font-weight:600;font-size:clamp(2.5rem,7vw,4.4rem);line-height:1.02;letter-spacing:-.035em}
+  .hero h1 em{font-style:normal;font-weight:200;color:var(--accent)}
+  .tagline{margin:18px auto 0;max-width:600px;color:var(--muted);font-size:1.03rem;min-height:1.6em}
+
+  /* résumé */
+  #resume-slot{margin-top:26px;display:flex;justify-content:center}
+  .resume-btn{position:relative;display:inline-flex;align-items:center;gap:10px;
+    font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--text);background:rgba(56,58,71,.8);border:1px solid var(--line);
+    border-radius:999px;padding:12px 24px;cursor:pointer;
+    transition:border-color .2s,color .2s,transform .2s}
+  .resume-btn:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px)}
+  .resume-btn svg{width:14px;height:14px}
+  .resume-drop{display:inline-flex;flex-direction:column;align-items:center;gap:5px;
+    border:1.5px dashed var(--line);border-radius:14px;padding:16px 30px;cursor:pointer;
+    background:repeating-linear-gradient(45deg,#33343f 0 10px,#2c2d37 10px 20px);
+    transition:border-color .2s}
+  .resume-drop:hover,.resume-drop.drag{border-color:var(--accent)}
+  .resume-drop b{font-weight:600;font-size:11px;letter-spacing:.2em;color:var(--muted)}
+  .resume-drop i{font-style:normal;font-size:10.5px;letter-spacing:.04em;color:var(--dim)}
+
+  #resume-modal{position:fixed;inset:0;z-index:70;display:none;flex-direction:column;
+    align-items:center;justify-content:center;gap:14px;padding:58px 24px 24px;
+    background:rgba(24,25,32,.86);backdrop-filter:blur(8px)}
+  #resume-modal.open{display:flex}
+  #resume-modal iframe{width:min(900px,100%);flex:1;border:1px solid var(--line);
+    border-radius:14px;background:#fff;box-shadow:0 30px 80px -30px rgba(0,0,0,.9)}
+  #resume-modal .row{display:flex;gap:18px;align-items:center}
+  #resume-modal a,#resume-modal button{font-size:10px;font-weight:600;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--muted);background:none;border:none;cursor:pointer;
+    text-decoration:none;transition:color .2s}
+  #resume-modal a:hover,#resume-modal button:hover{color:var(--accent)}
+
+  /* ---------- project slide ---------- */
+  .project{display:grid;grid-template-columns:minmax(0,760px) 52px minmax(0,460px);
+    justify-content:center;align-items:center}
+  .project .media-stack{grid-column:1;position:relative;z-index:2}
+  .box-toggle{display:none;margin:14px auto 0;font-family:inherit;font-size:10px;font-weight:600;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--dim);background:none;
+    border:1px solid var(--line-soft);border-radius:999px;padding:6px 14px;cursor:pointer;
+    transition:color .2s,border-color .2s}
+  body.guides .box-toggle{display:block}
+  .box-toggle:hover{color:var(--accent);border-color:var(--accent)}
+  /* the column scrolls on its own so a long ledger can't push the title off screen */
+  .project .copy{grid-column:3;min-width:0;max-height:calc(100vh - 172px);
+    overflow-y:auto;padding-right:10px}
+  .copy::-webkit-scrollbar{width:5px}
+  .copy::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+  .copy::-webkit-scrollbar-track{background:transparent}
+  .copy-head{position:sticky;top:0;z-index:3;background:var(--bg);padding-bottom:10px}
+  .copy-head::after{content:'';position:absolute;left:0;right:0;top:100%;height:14px;
+    background:linear-gradient(var(--bg),transparent);pointer-events:none}
+  .rope{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;overflow:visible}
+  @media(max-width:980px){
+    .project{grid-template-columns:1fr;gap:26px;max-width:620px;margin:0 auto}
+    .project .media-col,.project .copy{grid-column:1}
+  }
+
+  /* media squares */
+  .media-col{display:grid;gap:64px}
+  .media-col.pair{grid-template-columns:1fr 1fr}
+  .media-item{display:grid;gap:10px;min-width:0}
+  /* paired boxes stand taller than wide, so each one is bigger than a square */
+  .media-col.pair .slot{aspect-ratio:4/5;max-height:66vh}
+  .media-col.solo{justify-items:center}
+  /* a lone media box gets the whole column — as big as the slide can hold */
+  .media-col.solo .media-item{width:min(100%, calc(66vh * 4 / 3))}
+  .media-col.solo .slot{width:100%;aspect-ratio:4/3}
+  @media(max-width:980px){.media-col{gap:26px}}
+
+  /* gallery controls under the media box */
+  .gal-nav{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:16px}
+  .gal-nav.hide{display:none}
+  .gal-btn{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);
+    background:rgba(56,58,71,.7);color:var(--muted);display:flex;align-items:center;
+    justify-content:center;cursor:pointer;transition:color .2s,border-color .2s}
+  .gal-btn:hover{color:var(--accent);border-color:var(--accent)}
+  .gal-btn svg{width:15px;height:15px}
+  .gal-count{font-size:11px;font-weight:500;letter-spacing:.14em;color:var(--dim);min-width:52px;
+    text-align:center}
+  .gal-edit{display:none;font-family:inherit;font-size:10px;font-weight:600;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--dim);background:none;border:1px solid var(--line-soft);
+    border-radius:999px;padding:6px 12px;cursor:pointer;transition:color .2s,border-color .2s}
+  body.guides .gal-edit{display:block}
+  .gal-edit:hover{color:var(--accent);border-color:var(--accent)}
+
+  .caption{font-size:12px;line-height:1.5;color:var(--dim);text-align:center;min-height:1.4em}
+  .cloud .caption{color:#7e8089}
+  body:not(.guides) .caption:empty{display:none}
+  .slot{position:relative;aspect-ratio:1/1;border:1px solid var(--line);border-radius:16px;
+    overflow:hidden;background:var(--panel);box-shadow:0 26px 60px -32px rgba(0,0,0,.85);z-index:2}
+  .slot.empty{border:1.5px dashed var(--line);cursor:pointer;
+    background:repeating-linear-gradient(45deg,#33343f 0 10px,#2c2d37 10px 20px);transition:border-color .2s}
+  .slot.empty:hover{border-color:var(--accent)}
+  .slot img,.slot video{display:block;width:100%;height:100%;object-fit:cover;background:#15161c}
+  .hint{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;gap:7px;text-align:center;padding:14px}
+  .hint b{font-weight:600;font-size:11.5px;letter-spacing:.2em;color:var(--muted)}
+  .hint i{font-style:normal;font-size:10.5px;letter-spacing:.04em;color:var(--dim);line-height:1.4}
+  .slot.drag{border-color:var(--accent);border-style:solid;box-shadow:0 0 0 3px rgba(224,164,88,.22)}
+  .slot .clear{position:absolute;top:8px;right:8px;width:23px;height:23px;border-radius:50%;border:none;
+    background:rgba(0,0,0,.6);color:#fff;font-size:13px;line-height:1;cursor:pointer;opacity:0;transition:opacity .2s}
+  .slot.filled:hover .clear{opacity:1}
+
+  /* copy */
+  .year{font-size:10.5px;font-weight:500;letter-spacing:.2em;color:var(--accent);text-transform:uppercase}
+  .copy h2{font-weight:600;font-size:clamp(1.6rem,3vw,2.2rem);line-height:1.1;
+    letter-spacing:-.03em;margin:9px 0 6px}
+  .role{font-size:11.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:14px;min-height:1.4em}
+  .copy .blurb{color:#c7cbd4;font-size:.98rem;margin-bottom:22px;min-height:1.6em}
+  .ledger{display:grid;gap:18px}
+  .ledger-block{border-left:2px solid var(--line);padding-left:15px;min-width:0}
+  .ledger-block h3{font-size:10.5px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px}
+  .ledger-block.win{border-left-color:var(--win)}
+  .ledger-block.win h3{color:var(--win)}
+  .ledger-block.fail{border-left-color:var(--fail)}
+  .ledger-block.fail h3{color:var(--fail)}
+  .ledger-block .body{font-size:.92rem;line-height:1.65;color:#b3b8c2;min-height:1.6em}
+  .ctx-again{margin-top:24px;font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--dim);background:none;border:1px solid var(--line-soft);border-radius:999px;
+    padding:7px 14px;cursor:pointer;transition:color .2s,border-color .2s}
+  .ctx-again:hover{color:var(--accent);border-color:var(--accent)}
+
+  /* ---------- context cloud ---------- */
+  .popup{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;
+    padding:60px 24px;background:rgba(40,41,52,.55);backdrop-filter:blur(7px);
+    overflow-y:auto;overflow-x:hidden;transition:opacity .45s ease}
+  .popup.gone{opacity:0;pointer-events:none}
+  .cloud-wrap{position:relative;width:min(900px,95vw);margin:auto;--ctxw:min(560px,82%);
+    animation:float 7s ease-in-out infinite;filter:drop-shadow(0 40px 60px rgba(0,0,0,.45))}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  /* the silhouette: one body + bumps, all white, forming a cloud outline */
+  .shape{position:absolute;inset:0;z-index:0}
+  .shape .body{position:absolute;left:0;right:0;top:19%;bottom:13%;background:#fff;border-radius:200px}
+  .shape i{position:absolute;display:block;background:#fff;border-radius:50%;width:var(--w);aspect-ratio:1}
+  .cloud{position:relative;z-index:1;padding:84px 104px 72px;text-align:center;color:var(--ink)}
+  @media(max-width:820px){.cloud{padding:66px 52px 56px}}
+  .cloud .head{width:var(--ctxw);margin:0 auto 20px;display:flex;align-items:baseline;
+    justify-content:space-between;gap:16px;flex-wrap:wrap;text-align:left}
+  .cloud .period{font-size:clamp(1.35rem,2.6vw,2rem);font-weight:700;letter-spacing:-.025em;
+    line-height:1.1;color:#d99a0c}
+  .cloud .eyebrow{font-size:10px;font-weight:600;letter-spacing:.24em;text-transform:uppercase;
+    color:#9a9ba6;white-space:nowrap}
+  .cloud .ctx-media{width:var(--ctxw);margin:0 auto 24px;display:grid;gap:14px}
+  .cloud .ctx-media.pair{grid-template-columns:1fr 1fr}
+  .cloud .ctx-slot{width:100%;aspect-ratio:16/10;position:relative;
+    border-radius:22px;overflow:hidden;background:#eceef1;border:1.5px dashed #c3c6cd;cursor:pointer;z-index:2}
+  .cloud .ctx-media.pair .ctx-slot{aspect-ratio:3/4}
+  .cloud .ctx-slot.filled{border:1px solid #dfe1e6;cursor:default;background:#eef0f2}
+  /* contain, not cover — a tall phone photo shouldn't get its subject cropped out */
+  .cloud .ctx-slot img,.cloud .ctx-slot video{width:100%;height:100%;object-fit:contain;display:block}
+  .cloud .ctx-slot .hint b{color:#61636e}
+  .cloud .ctx-slot .hint i{color:#9a9ba6}
+  .cloud .ctx-slot.drag{border-color:var(--accent);border-style:solid}
+  .cloud .ctx-text{font-size:1.02rem;line-height:1.7;color:#3c3e49;min-height:1.6em;
+    width:var(--ctxw);margin:0 auto;text-align:left}
+  .cloud .okay{margin-top:28px;font-family:inherit;font-size:11px;font-weight:600;letter-spacing:.18em;
+    text-transform:uppercase;color:#fff;background:var(--ink);border:none;border-radius:999px;
+    padding:13px 36px;cursor:pointer;transition:transform .2s,background .2s}
+  .cloud .okay:hover{background:#3d3f4c;transform:translateY(-1px)}
+
+  /* ---------- future works ---------- */
+  .future{max-height:calc(100vh - 150px);overflow-y:auto;padding-right:8px}
+  .future::-webkit-scrollbar{width:5px}
+  .future::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+  .future-head{text-align:center;margin-bottom:34px}
+  .future-head .eyebrow{font-size:10px;font-weight:600;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  .future-head h2{font-weight:600;font-size:clamp(1.8rem,3.4vw,2.6rem);line-height:1.1;
+    letter-spacing:-.03em;min-height:1.1em}
+  .future-head .intro{margin:12px auto 0;max-width:620px;color:var(--muted);min-height:1.6em}
+  .future-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:18px;align-items:start}
+  @media(max-width:900px){.future-list{grid-template-columns:1fr}}
+  .idea{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 20px;
+    box-shadow:0 22px 50px -34px rgba(0,0,0,.8);position:relative}
+  .idea .n{font-size:10px;font-weight:600;letter-spacing:.18em;color:var(--accent);margin-bottom:10px}
+  .idea h3{font-weight:600;font-size:1.05rem;letter-spacing:-.02em;margin-bottom:8px;min-height:1.3em}
+  .idea .body{font-size:.92rem;line-height:1.65;color:#b3b8c2;min-height:1.6em;white-space:pre-wrap}
+  .idea .drop-idea{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;
+    border:1px solid var(--line);background:var(--bg);color:var(--dim);font-size:12px;line-height:1;
+    cursor:pointer;display:none}
+  body.guides .idea .drop-idea{display:block}
+  .future-tools{display:flex;gap:10px;justify-content:center;margin-top:24px;flex-wrap:wrap}
+
+  /* ---------- contact ---------- */
+  .contact{text-align:center}
+  .contact .line{color:var(--muted);max-width:520px;margin:0 auto;min-height:1.6em;font-size:1.05rem}
+  .contact .colophon{margin-top:40px;font-size:10px;font-weight:500;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--dim)}
+
+  /* ---------- arrows, rail, tools ---------- */
+  .arrow{position:fixed;left:50%;transform:translateX(-50%);z-index:40;
+    width:48px;height:48px;border-radius:50%;border:1px solid var(--line);
+    background:rgba(56,58,71,.85);backdrop-filter:blur(10px);color:var(--text);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;
+    transition:opacity .25s,border-color .2s,color .2s}
+  .arrow:hover{border-color:var(--accent);color:var(--accent)}
+  .arrow svg{width:17px;height:17px}
+  #up{top:20px}
+  #down{bottom:20px;animation:bob 2.4s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(5px)}}
+  .arrow.off{opacity:0;pointer-events:none}
+
+  .rail{position:fixed;right:22px;top:50%;transform:translateY(-50%);z-index:40;display:grid;gap:9px}
+  .rail b{display:block;width:7px;height:7px;border-radius:50%;background:var(--line);
+    cursor:pointer;transition:background .25s,transform .25s}
+  .rail b.on{background:var(--accent);transform:scale(1.35)}
+
+  #tools{position:fixed;left:18px;bottom:18px;z-index:45}
+  #tools-btn{width:34px;height:34px;border-radius:50%;border:1px solid var(--line-soft);
+    background:rgba(56,58,71,.6);color:var(--dim);display:flex;align-items:center;justify-content:center;
+    cursor:pointer;transition:color .2s,border-color .2s,opacity .2s;opacity:.55}
+  #tools-btn:hover,#tools.open #tools-btn{opacity:1;color:var(--accent);border-color:var(--accent)}
+  #tools-btn svg{width:14px;height:14px}
+  #tools-menu{position:absolute;left:0;bottom:44px;display:none;flex-direction:column;gap:2px;
+    background:rgba(56,58,71,.96);backdrop-filter:blur(12px);border:1px solid var(--line);
+    border-radius:12px;padding:6px;box-shadow:0 22px 50px -18px rgba(0,0,0,.8);white-space:nowrap}
+  #tools.open #tools-menu{display:flex}
+  #tools-menu button{font-family:inherit;font-size:10px;font-weight:600;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--text);background:none;border:none;border-radius:8px;
+    padding:9px 14px;cursor:pointer;text-align:left;transition:background .15s,color .15s}
+  #tools-menu button:hover{background:rgba(255,255,255,.06);color:var(--accent)}
+
+  #toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);z-index:46;
+    background:rgba(56,58,71,.96);border:1px solid var(--line);border-radius:999px;
+    padding:10px 20px;font-size:11px;letter-spacing:.04em;color:var(--muted);
+    opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;max-width:80vw;text-align:center}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* ---------- text boxes ---------- */
+  [data-bind]{outline:none;border-radius:5px;overflow-wrap:anywhere}
+  [data-multi]{white-space:pre-wrap}
+  body.guides [data-bind]{box-shadow:0 0 0 1px var(--line-soft);padding:3px 7px;
+    cursor:text;transition:box-shadow .15s}
+  body.guides .cloud .ctx-text{margin:0 auto}   /* stays centred on the media above it */
+  body.guides .cloud [data-bind]{box-shadow:0 0 0 1px #d8dade}
+  body.guides [data-bind]:hover{box-shadow:0 0 0 1px var(--line)}
+  body.guides [data-bind]:focus{box-shadow:0 0 0 2px var(--accent);background:rgba(255,255,255,.05)}
+  body.guides .cloud [data-bind]:focus{background:#f6f7f8}
+  [data-bind]:empty::before{content:attr(data-ph);color:var(--dim);opacity:.85;letter-spacing:.04em}
+  .cloud [data-bind]:empty::before{color:#a9abb4}
+  body:not(.guides) [data-bind]:empty::before{content:'';opacity:0}
+  body:not(.guides) .empty-block{display:none}
+
+  @media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body class="guides">
+
+<div id="deck">
+  <section class="slide">
+    <div class="inner hero">
+      <img class="avatar" src="assets/profile.jpg" alt="" />
+      <h1>Munn <em>Aneja</em></h1>
+      <p class="tagline" data-bind="site.tagline" data-ph="text here"></p>
+      <div id="resume-slot"></div>
+    </div>
+  </section>
+  <!-- project slides are inserted here -->
+  <section class="slide" id="contact-slide">
+    <div class="inner contact">
+      <p class="line" data-bind="site.footerLine" data-ph="text here"></p>
+      <div class="colophon">Munn Aneja</div>
+    </div>
+  </section>
+</div>
+
+<button class="arrow off" id="up" title="previous">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+</button>
+<button class="arrow" id="down" title="next">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+</button>
+<div class="rail" id="rail"></div>
+
+<div id="tools">
+  <div id="tools-menu">
+    <button id="preview-btn">Preview</button>
+    <button id="export-btn">Export projects.js</button>
+  </div>
+  <button id="tools-btn" title="tools">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+  </button>
+</div>
+<div id="resume-modal">
+  <iframe title="resume" src="about:blank"></iframe>
+  <div class="row">
+    <a id="resume-open" href="#" target="_blank" rel="noopener">Open in a new tab</a>
+    <button id="resume-close">Close</button>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script src="projects.js"></script>
+<script>
+/* ---------------- data + storage ---------------- */
+const KEY = 'munn-portfolio-v5';
+const DEFAULTS = window.PROJECTS;
+const SITE_FILE = window.SITE;                   // what projects.js says, before any draft
+const DATA = { site: window.SITE, p: window.PROJECTS };
+try{
+  const saved = JSON.parse(localStorage.getItem(KEY) || 'null');
+  if(saved && saved.site && saved.p)
+    Object.assign(DATA, {site:saved.site, p:saved.p, rev:saved.rev || 0});
+}catch(e){}
+// one-time: Hayping shows a single big media box (runs once, then remembers)
+if(!(DATA.rev >= 6)){
+  if(DATA.p[0] && Array.isArray(DATA.p[0].media) && DATA.p[0].media.length > 1
+     && !(DATA.p[0].media[1] || {}).src)
+    DATA.p[0].media = [DATA.p[0].media[0] || {}];
+  DATA.rev = 6;   // persisted by the next save; re-running it is harmless
+}
+// future works used to be a single slide; it's a list of them now
+if(!Array.isArray(DATA.site.futures))
+  DATA.site.futures = DATA.site.future ? [DATA.site.future] : [];
+delete DATA.site.future;
+const fileFutures = (SITE_FILE && SITE_FILE.futures) || [];
+const hasWords = f => f && ((f.title||'').trim() || (f.intro||'').trim()
+  || (f.ideas||[]).some(i => (i.title||'').trim() || (i.body||'').trim()));
+// one-time: take the future-works text from projects.js for any slide you haven't written
+if(!(DATA.rev >= 8)){
+  fileFutures.forEach((src,n)=>{
+    if(!hasWords(DATA.site.futures[n]))
+      DATA.site.futures[n] = JSON.parse(JSON.stringify(src));
+  });
+  DATA.rev = 8;
+}
+// one-time: the Hayping V2 future slide was dropped in favour of the workspace one
+if(!(DATA.rev >= 9)){
+  DATA.site.futures = DATA.site.futures.filter(f => (f.title||'').trim() !== 'Hayping V2');
+  DATA.rev = 9;
+}
+if(!DATA.site.futures.length) DATA.site.futures = [{}];
+// the future slide is laid out like a project slide now — fold the old card fields into it
+DATA.site.futures.forEach((f,n)=>{
+  if(f.period === undefined) f.period = 'What’s next';
+  if(f.role === undefined)   f.role = '';
+  if(f.blurb === undefined)  f.blurb = f.intro || '';
+  if(f.does === undefined || f.needs === undefined){
+    const cards = (f.ideas || []).filter(i => (i.title||'').trim() || (i.body||'').trim());
+    const asText = c => (c.title ? c.title + ' — ' : '') + (c.body || '');
+    if(f.does === undefined)
+      f.does = cards.slice(0, 2).map(asText).join('\n\n');
+    if(f.needs === undefined)
+      f.needs = cards.slice(2).map(asText).join('\n\n');
+  }
+  delete f.intro; delete f.ideas;
+  if(!Array.isArray(f.media)) f.media = [{}];
+  f.media.forEach(m=>{ if(m.caption === undefined) m.caption = ''; });
+  f.context = f.context || { media:[{},{}], text:'' };
+  if(!Array.isArray(f.context.media)) f.context.media = [f.context.media || {}, {}];
+  while(f.context.media.length < 2) f.context.media.push({});
+});
+const _r = DATA.site.resume;                     // résumés used to be recorded in assets/
+if(_r && _r.src && /^assets\/(?!media\/)/.test(_r.src))
+  _r.src = _r.src.replace(/^assets\//, 'assets/media/');
+DEFAULTS.forEach((d,i)=>{                          // projects added to projects.js since this draft
+  if(!DATA.p[i]) DATA.p[i] = d;
+  else if(DATA.p[i].period == null) DATA.p[i].period = d.period || DATA.p[i].year || '';
+});
+DATA.p.forEach(p=>{                                  // older drafts kept lists — fold them into one block
+  p.context = p.context || {media:[{},{}], text:''};
+  if(!Array.isArray(p.context.media))                // the cloud used to hold a single item
+    p.context.media = [p.context.media || {}, {}];
+  while(p.context.media.length < 2) p.context.media.push({});
+  if(Array.isArray(p.wins))  p.wins  = p.wins.filter(s=>s && s.trim()).join('\n');
+  if(Array.isArray(p.fails)) p.fails = p.fails.filter(s=>s && s.trim()).join('\n');
+  if(Array.isArray(p.stats)) delete p.stats;
+});
+
+const blobs = {};
+const get = path => path.split('.').reduce((o,k)=>o&&o[k], DATA);
+function set(path, val){
+  const ks = path.split('.'), last = ks.pop();
+  ks.reduce((o,k)=>o[k], DATA)[last] = val;
+  save();
+}
+let st; function save(){
+  clearTimeout(st);
+  st = setTimeout(()=>{ try{ localStorage.setItem(KEY,
+    JSON.stringify({site:DATA.site, p:DATA.p, rev:DATA.rev})); }catch(e){} }, 250);
+}
+let tt; function flash(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(tt); tt = setTimeout(()=>el.classList.remove('show'), 3200);
+}
+const guides = () => document.body.classList.contains('guides');
+
+/* ---------------- render ---------------- */
+const esc = s => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const field = (path, cls='', multi=false) =>
+  `<div${cls?` class="${cls}"`:''} data-bind="${path}"${multi?' data-multi':''} data-ph="text here">${esc(get(path))}</div>`;
+
+function mediaInner(m, src){
+  return m.type === 'video'
+    ? `<video src="${esc(src)}" controls muted loop playsinline preload="metadata"></video>`
+    : `<img src="${esc(src)}" alt="" loading="lazy" />`;
+}
+// a media box plus the caption line under it
+function mediaItemHTML(path, cls='slot'){
+  return `<div class="media-item">${slotHTML(path, cls)}
+    <div class="caption" data-bind="${path}.caption" data-ph="caption here">${
+      esc((get(path)||{}).caption)}</div></div>`;
+}
+
+function slotHTML(path, cls='slot'){
+  const m = get(path) || {};
+  const src = blobs[path] || m.src;
+  if(src) return `<div class="${cls} filled" data-slot="${path}">${mediaInner(m, src)}
+    <button class="clear" title="remove">&times;</button></div>`;
+  return `<div class="${cls} empty" data-slot="${path}">
+    <div class="hint"><b>MEDIA HERE</b><i>drag a photo or .mp4<br>or click</i></div></div>`;
+}
+
+const PUFFS = [                                        // the cloud silhouette
+  'left:-3%;top:16%;--w:28%', 'left:6%;top:4%;--w:30%',
+  'left:26%;top:-9%;--w:40%', 'left:52%;top:-3%;--w:34%',
+  'right:2%;top:9%;--w:30%',  'right:-4%;top:28%;--w:26%',
+  'left:3%;bottom:-2%;--w:28%','left:28%;bottom:-8%;--w:34%',
+  'left:56%;bottom:-5%;--w:30%','right:2%;bottom:0%;--w:26%'
+];
+
+function ctxMediaHTML(base){
+  const g = guides();
+  const arr = get(base + '.context.media') || [];
+  const shown = arr.map((m,j)=>j)
+    .filter(j => g || (get(`${base}.context.media.${j}`)||{}).src || blobs[`${base}.context.media.${j}`]);
+  if(!shown.length) return '';
+  return `<div class="ctx-media ${shown.length > 1 ? 'pair' : 'solo'}">
+    ${shown.map(j => mediaItemHTML(`${base}.context.media.${j}`, 'ctx-slot')).join('')}</div>`;
+}
+
+// the cloud that comes before a slide — same for projects and future works
+function cloudHTML(base, key, heading, periodPath){
+  return `<div class="popup" data-popup="${key}">
+    <div class="cloud-wrap">
+      <div class="shape"><div class="body"></div>${PUFFS.map(s=>`<i style="${s}"></i>`).join('')}</div>
+      <div class="cloud">
+        <div class="head">
+          ${field(periodPath, 'period')}
+          <div class="eyebrow">Context &middot; ${esc(heading)}</div>
+        </div>
+        ${ctxMediaHTML(base)}
+        ${field(`${base}.context.text`, 'ctx-text', true)}
+        <button class="okay" data-okay="${key}">Okay</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+const gal = {};                       // which media box each project is showing
+
+const CHEV_UP   = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>`;
+const CHEV_DOWN = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>`;
+
+// which media boxes are on screen right now, for a given base path
+function shownMedia(base){
+  const arr = get(base + '.media') || [];
+  const g = guides();
+  return arr.map((m,j)=>j)
+    .filter(j => g || (get(`${base}.media.${j}`)||{}).src || blobs[`${base}.media.${j}`]);
+}
+
+// one big box at a time, flipped through with the arrows under it
+function galleryHTML(base, key){
+  const g = guides(), arr = get(base + '.media') || [];
+  const items = shownMedia(base);
+  if(!items.length) return '';
+
+  let k = gal[key] || 0;
+  if(k >= items.length){ k = 0; gal[key] = 0; }
+  const j = items[k];
+
+  const arrows = items.length > 1
+    ? `<button class="gal-btn" data-gal="${key}" data-base="${base}" data-dir="-1" title="previous">${CHEV_UP}</button>
+       <span class="gal-count">${k+1} / ${items.length}</span>
+       <button class="gal-btn" data-gal="${key}" data-base="${base}" data-dir="1" title="next">${CHEV_DOWN}</button>`
+    : '';
+
+  return `<div class="media-col solo">${mediaItemHTML(`${base}.media.${j}`)}</div>
+    <div class="gal-nav${(items.length > 1 || g) ? '' : ' hide'}">
+      ${arrows}
+      <button class="gal-edit" data-add-media="${base}" data-key="${key}">+ add box</button>
+      ${arr.length > 1
+        ? `<button class="gal-edit" data-del-media="${base}" data-key="${key}">remove this</button>` : ''}
+    </div>`;
+}
+
+function projectHTML(p, i){
+  const g = guides();
+  const media = galleryHTML(`p.${i}`, `p${i}`);
+
+  const block = (kind,label,cls) => {
+    const v = get(`p.${i}.${kind}`) || '';
+    return `<div class="ledger-block ${cls}${v.trim()?'':' empty-block'}">
+      <h3>${label}</h3>${field(`p.${i}.${kind}`,'body',true)}</div>`;
+  };
+
+  return `<section class="slide" data-project="${i}">
+    <svg class="rope" aria-hidden="true"></svg>
+    <div class="inner project">
+      <div class="media-stack">${media}</div>
+      <div class="copy">
+        <div class="copy-head">
+          ${field(`p.${i}.year`,'year')}
+          <h2 data-bind="p.${i}.title" data-ph="text here">${esc(p.title)}</h2>
+          ${field(`p.${i}.role`,'role')}
+        </div>
+        ${field(`p.${i}.blurb`,'blurb',true)}
+        <div class="ledger">${block('wins','What worked','win')}${block('fails',"What didn't",'fail')}</div>
+        <button class="ctx-again" data-ctx="p${i}">Read the context again</button>
+      </div>
+    </div>
+    ${cloudHTML(`p.${i}`, `p${i}`, p.title, `p.${i}.period`)}
+  </section>`;
+}
+
+let slides = [], cur = 0;
+const seen = new Set();
+
+function render(){
+  document.querySelectorAll('.slide[data-project]').forEach(s=>s.remove());
+  document.querySelectorAll('.slide[data-future]').forEach(s=>s.remove());
+  document.getElementById('contact-slide').insertAdjacentHTML('beforebegin',
+    DATA.p.map(projectHTML).join('') + DATA.site.futures.map(futureHTML).join(''));
+
+  document.querySelectorAll('[data-bind]').forEach(el=>{
+    if(!el.closest('[data-project]')) el.textContent = get(el.dataset.bind) || '';
+  });
+
+  renderResume();
+  slides = [...document.querySelectorAll('.slide')];
+  document.querySelectorAll('.popup').forEach(pop=>{
+    if(seen.has(pop.dataset.popup)) pop.classList.add('gone');
+  });
+  buildRail();
+  wire();
+  go(Math.min(cur, slides.length-1), 0, true);
+}
+
+/* ---------------- future works ---------------- */
+// same shape as a project slide: one big media box on the left, the writing on the right
+function futureHTML(f, n){
+  const base = `site.futures.${n}`;
+  const media = galleryHTML(base, `f${n}`);
+  const block = (kind, label, cls) => {
+    const v = get(`${base}.${kind}`) || '';
+    return `<div class="ledger-block ${cls}${v.trim() ? '' : ' empty-block'}">
+      <h3>${label}</h3>${field(`${base}.${kind}`, 'body', true)}</div>`;
+  };
+
+  return `<section class="slide" data-future="${n}">
+    <svg class="rope" aria-hidden="true"></svg>
+    <div class="inner project">
+      <div class="media-stack">${media}</div>
+      <div class="copy">
+        <div class="copy-head">
+          ${field(`${base}.period`, 'year')}
+          <h2 data-bind="${base}.title" data-ph="text here">${esc(f.title)}</h2>
+          ${field(`${base}.role`, 'role')}
+        </div>
+        ${field(`${base}.blurb`, 'blurb', true)}
+        <div class="ledger">
+          ${block('does', 'What it does', 'win')}
+          ${block('needs', "What I'd need", 'fail')}
+        </div>
+        <button class="ctx-again" data-ctx="f${n}">Read the context again</button>
+        <div class="future-tools">
+          <button class="gal-edit" data-add-future="1">+ add slide</button>
+          ${DATA.site.futures.length > 1
+            ? `<button class="gal-edit" data-del-future="${n}">remove this slide</button>` : ''}
+        </div>
+      </div>
+    </div>
+    ${cloudHTML(base, `f${n}`, f.title || 'what’s next', `${base}.period`)}
+  </section>`;
+}
+
+/* ---------------- résumé ---------------- */
+function renderResume(){
+  const host = document.getElementById('resume-slot');
+  const r = DATA.site.resume || {};
+  const src = blobs['site.resume'] || r.src;
+  if(src){
+    host.innerHTML = `<button class="resume-btn" id="resume-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+        <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+      Résumé</button>`;
+  }else{
+    host.innerHTML = guides()
+      ? `<div class="resume-drop" id="resume-btn"><b>RESUME HERE</b><i>drag a .pdf &middot; or click</i></div>`
+      : '';
+  }
+  const el = document.getElementById('resume-btn');
+  if(!el) return;
+
+  ['dragenter','dragover'].forEach(ev=>el.addEventListener(ev, e=>{
+    e.preventDefault(); el.classList.add('drag'); }));
+  ['dragleave','dragend','drop'].forEach(ev=>el.addEventListener(ev, e=>{
+    e.preventDefault(); el.classList.remove('drag'); }));
+  el.addEventListener('drop', e=>{
+    const f = e.dataTransfer.files && e.dataTransfer.files[0];
+    if(f) acceptResume(f);
+  });
+  el.addEventListener('click', e=>{
+    if(src){ openResume(src); return; }   // no remove button — dropping a new PDF replaces it
+    const inp = Object.assign(document.createElement('input'), {type:'file', accept:'application/pdf,.pdf'});
+    inp.onchange = ()=>{ if(inp.files[0]) acceptResume(inp.files[0]); };
+    inp.click();
+  });
+}
+function acceptResume(file){
+  if(file.type !== 'application/pdf' && !/\.pdf$/i.test(file.name))
+    return flash('the résumé needs to be a PDF');
+  blobs['site.resume'] = URL.createObjectURL(file);
+  DATA.site.resume = { src: 'assets/media/' + file.name };
+  save(); renderResume();
+  flash('preview only — copy ' + file.name + ' into assets/media/');
+}
+async function openResume(src){
+  if(!src.startsWith('blob:')){          // say which file is missing instead of a blank viewer
+    try{
+      const r = await fetch(src, {method:'HEAD'});
+      if(!r.ok) return flash("can't find " + src + " — is the file in that folder, spelled exactly like that?");
+    }catch(e){/* file:// can't be probed — just try to open it */}
+  }
+  const m = document.getElementById('resume-modal');
+  m.querySelector('iframe').src = src;
+  document.getElementById('resume-open').href = src;
+  m.classList.add('open');
+}
+function closeResume(){
+  const m = document.getElementById('resume-modal');
+  m.classList.remove('open');
+  m.querySelector('iframe').src = 'about:blank';
+}
+document.getElementById('resume-close').addEventListener('click', closeResume);
+document.getElementById('resume-modal').addEventListener('click', e=>{
+  if(e.target.id === 'resume-modal') closeResume();
+});
+const resumeOpen = () => document.getElementById('resume-modal').classList.contains('open');
+
+/* ---------------- slideshow ---------------- */
+function buildRail(){
+  document.getElementById('rail').innerHTML =
+    slides.map((_,i)=>`<b data-go="${i}"${i===cur?' class="on"':''}></b>`).join('');
+  document.querySelectorAll('[data-go]').forEach(b=>
+    b.addEventListener('click', ()=>go(+b.dataset.go, +b.dataset.go > cur ? 1 : -1)));
+}
+function go(i, dir=1, instant){
+  if(i < 0 || i >= slides.length) return;
+  cur = i;
+  slides.forEach(s=>s.classList.remove('active'));
+  const s = slides[i];
+  // the class goes on straight away — a hidden tab never runs requestAnimationFrame,
+  // and waiting for one there would leave the deck with no visible slide
+  if(!instant) s.style.transform = dir > 0 ? 'translateY(40px)' : 'translateY(-40px)';
+  s.classList.add('active');
+  requestAnimationFrame(()=>{ s.style.transform = ''; });
+  setTimeout(()=>{ s.style.transform = ''; }, 90);
+  document.getElementById('up').classList.toggle('off', i === 0);
+  document.getElementById('down').classList.toggle('off', i === slides.length-1);
+  document.querySelectorAll('#rail b').forEach((b,k)=>b.classList.toggle('on', k === i));
+  setTimeout(()=>drawRope(s), 0);
+}
+function flipMedia(key, base, dir){
+  const n = shownMedia(base).length;
+  if(n < 2) return;
+  gal[key] = ((gal[key] || 0) + dir + n) % n;                     // wraps around
+  render();
+}
+
+const popupOpen = () => {
+  const p = slides[cur] && slides[cur].querySelector('.popup');
+  return p && !p.classList.contains('gone');
+};
+document.getElementById('up').addEventListener('click', ()=>go(cur-1,-1));
+document.getElementById('down').addEventListener('click', ()=>go(cur+1,1));
+addEventListener('keydown', e=>{
+  if(document.activeElement && document.activeElement.isContentEditable) return;
+  if(resumeOpen()){ if(e.key === 'Escape') closeResume(); return; }
+  if(popupOpen()){
+    if(e.key === 'Enter' || e.key === 'Escape'){
+      const b = slides[cur].querySelector('.okay'); if(b) b.click();
+    }
+    return;
+  }
+  if(e.key === 'ArrowDown' || e.key === 'PageDown'){ e.preventDefault(); go(cur+1,1); }
+  if(e.key === 'ArrowUp'   || e.key === 'PageUp'  ){ e.preventDefault(); go(cur-1,-1); }
+  // left/right flip through the media of the project you're looking at
+  const s = slides[cur];
+  const base = s && (s.dataset.project !== undefined ? `p.${s.dataset.project}`
+             : s.dataset.future !== undefined ? `site.futures.${s.dataset.future}` : null);
+  const key  = s && (s.dataset.project !== undefined ? `p${s.dataset.project}` : `f${s.dataset.future}`);
+  if(base){
+    if(e.key === 'ArrowRight'){ e.preventDefault(); flipMedia(key, base, 1); }
+    if(e.key === 'ArrowLeft' ){ e.preventDefault(); flipMedia(key, base, -1); }
+  }
+});
+// the wheel scrolls whatever is under the cursor — only the arrows change slides
+
+/* ---------------- the rope ---------------- */
+const SVGNS = 'http://www.w3.org/2000/svg';
+function drawRope(slide){
+  if(!slide || !slide.matches('[data-project],[data-future]')) return;
+  const svg = slide.querySelector('.rope');
+  const col = slide.querySelector('.media-col');
+  if(!svg || !col) return;
+
+  const sr = slide.getBoundingClientRect(), cr = col.getBoundingClientRect();
+  const W = slide.clientWidth, H = slide.clientHeight;
+  const narrow = window.matchMedia('(max-width:980px)').matches;
+  // two boxes: the rope runs between them. one box: it runs in the gap
+  // between that box and the text, so it never hides behind the photo.
+  const slots = slide.querySelectorAll('.media-col .slot');
+  const copy = slide.querySelector('.copy');
+  let cx;
+  if(narrow) cx = 22;
+  else if(slots.length === 1 && copy){
+    const br = slots[0].getBoundingClientRect(), pr = copy.getBoundingClientRect();
+    cx = ((br.right + pr.left) / 2) - sr.left;
+  }
+  else cx = (cr.left - sr.left) + cr.width/2;
+  const ky = (cr.top - sr.top) + cr.height/2;
+  const amp = narrow ? 7 : 13, period = 165;
+
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.setAttribute('width', W); svg.setAttribute('height', H);
+  svg.innerHTML = '';
+
+  const x  = y => cx + amp * Math.sin((y/period) * Math.PI*2);
+  const dx = y => amp * (Math.PI*2/period) * Math.cos((y/period) * Math.PI*2);
+  let d = `M ${x(0).toFixed(2)} 0`;
+  for(let y = 4; y <= H; y += 4) d += ` L ${x(y).toFixed(2)} ${y}`;
+
+  const mk = (tag, attrs, parent=svg) => {
+    const e = document.createElementNS(SVGNS, tag);
+    for(const k in attrs) e.setAttribute(k, attrs[k]);
+    parent.appendChild(e); return e;
+  };
+  const uid = 'r' + (slide.dataset.project !== undefined
+    ? 'p' + slide.dataset.project : 'f' + slide.dataset.future);
+  const grad = mk('linearGradient', {id:uid, x1:0, y1:0, x2:0, y2:1});
+  [['0%',0],['10%',1],['90%',1],['100%',0]].forEach(([o,op])=>
+    mk('stop', {offset:o, 'stop-color':'#fff', 'stop-opacity':op}, grad));
+  const mask = mk('mask', {id:uid+'m'});
+  mk('rect', {width:W, height:H, fill:`url(#${uid})`}, mask);
+
+  const g = mk('g', {mask:`url(#${uid}m)`});
+  const add = (tag, attrs) => mk(tag, attrs, g);
+  const W_OUT = narrow ? 14 : 19, W_IN = narrow ? 10.5 : 15;   // rope thickness
+  add('path', {d, fill:'none', stroke:'var(--rope-dark)', 'stroke-width':W_OUT, 'stroke-linecap':'round'});
+  add('path', {d, fill:'none', stroke:'var(--rope)', 'stroke-width':W_IN, 'stroke-linecap':'round'});
+  const tick = W_IN * .58;
+  for(let y = 6; y < H; y += Math.round(W_IN * 1.35)){
+    const px = x(y), m = dx(y), len = Math.hypot(m,1);
+    const tx = m/len, ty = 1/len, nx = ty, ny = -tx, a = .5;
+    const ux = nx*Math.cos(a) + tx*Math.sin(a), uy = ny*Math.cos(a) + ty*Math.sin(a);
+    add('line', {x1:(px-ux*tick).toFixed(2), y1:(y-uy*tick).toFixed(2),
+                 x2:(px+ux*tick).toFixed(2), y2:(y+uy*tick).toFixed(2),
+                 stroke:'var(--rope-dark)', 'stroke-width':2.4, 'stroke-linecap':'round', opacity:.65});
+  }
+  add('path', {d, fill:'none', stroke:'rgba(255,255,255,.16)', 'stroke-width':2.2,
+               'stroke-linecap':'round', transform:`translate(${-W_IN*.26},0)`});
+
+  const kx = x(ky), kr = W_IN * 1.12;
+  add('circle', {cx:kx, cy:ky, r:kr + 3.4, fill:'var(--rope-dark)'});
+  add('circle', {cx:kx, cy:ky, r:kr, fill:'var(--rope)'});
+  add('circle', {cx:kx, cy:ky, r:kr, fill:'none', stroke:'rgba(0,0,0,.25)', 'stroke-width':1.4});
+  add('path', {d:`M ${kx-kr*.97} ${ky-kr*.39} Q ${kx} ${ky+kr*.29} ${kx+kr*.97} ${ky-kr*.39}`,
+               fill:'none', stroke:'var(--rope-dark)', 'stroke-width':2.4, 'stroke-linecap':'round'});
+  add('path', {d:`M ${kx-kr*.97} ${ky+kr*.39} Q ${kx} ${ky-kr*.29} ${kx+kr*.97} ${ky+kr*.39}`,
+               fill:'none', stroke:'var(--rope-dark)', 'stroke-width':2.4, 'stroke-linecap':'round'});
+}
+let rt; addEventListener('resize', ()=>{ clearTimeout(rt); rt = setTimeout(()=>drawRope(slides[cur]), 120); });
+
+/* ---------------- typing ---------------- */
+function wire(){
+  document.querySelectorAll('[data-bind]').forEach(el=>{
+    el.contentEditable = guides() ? 'true' : 'false';
+    if(el._wired) return; el._wired = true;
+    const multi = el.hasAttribute('data-multi');
+    el.addEventListener('input', ()=>{
+      if(el.innerHTML === '<br>') el.innerHTML = '';
+      set(el.dataset.bind, multi ? el.textContent.replace(/\s+$/,'') : el.textContent.trim());
+    });
+    el.addEventListener('paste', e=>{
+      e.preventDefault();
+      let t = (e.clipboardData||window.clipboardData).getData('text');
+      if(!multi) t = t.replace(/\s+/g,' ');
+      document.execCommand('insertText', false, t);
+    });
+    el.addEventListener('keydown', e=>{
+      if(e.key !== 'Enter') return;
+      e.preventDefault();
+      if(multi && !e.shiftKey) document.execCommand('insertText', false, '\n');
+      else el.blur();
+    });
+  });
+  document.querySelectorAll('[data-okay]').forEach(b=>{
+    if(b._wired) return; b._wired = true;
+    b.addEventListener('click', ()=>{
+      const k = b.dataset.okay;
+      seen.add(k);
+      document.querySelector(`[data-popup="${k}"]`).classList.add('gone');
+    });
+  });
+  document.querySelectorAll('[data-drop-idea]').forEach(b=>{
+    if(b._wired) return; b._wired = true;
+    b.addEventListener('click', ()=>{
+      const [n,k] = b.dataset.dropIdea.split('.').map(Number);
+      DATA.site.futures[n].ideas.splice(k, 1);
+      save(); render();
+    });
+  });
+  document.querySelectorAll('[data-add-idea]').forEach(b=>{
+    if(b._wired) return; b._wired = true;
+    b.addEventListener('click', ()=>{
+      DATA.site.futures[+b.dataset.addIdea].ideas.push({title:'', body:''});
+      save(); render();
+    });
+  });
+  document.querySelectorAll('[data-add-future]').forEach(b=>{
+    if(b._wired) return; b._wired = true;
+    b.addEventListener('click', ()=>{
+      DATA.site.futures.push({title:'', intro:'',
+        ideas:[{title:'',body:''},{title:'',body:''},{title:'',body:''}]});
+      save(); render();
+      go(slides.findIndex(s=>s.dataset.future == DATA.site.futures.length-1), 1);
+    });
+  });
+  document.querySelectorAll('[data-del-future]').forEach(b=>{
+    if(b._wired) return; b._wired = true;
+    b.addEventListener('click', ()=>{
+      if(DATA.site.futures.length < 2) return;
+      DATA.site.futures.splice(+b.dataset.delFuture, 1);
+      cur = Math.max(0, cur - 1);
+      save(); render();
+    });
+  });
+  document.querySelectorAll('[data-gal]').forEach(b=>{
+    if(b._wired) return; b._wired = true;
+    b.addEventListener('click', ()=> flipMedia(b.dataset.gal, b.dataset.base, +b.dataset.dir));
+  });
+  document.querySelectorAll('[data-add-media]').forEach(b=>{
+    if(b._wired) return; b._wired = true;
+    b.addEventListener('click', ()=>{
+      const arr = get(b.dataset.addMedia + '.media');
+      arr.push({});
+      gal[b.dataset.key] = arr.length - 1;       // land on the new empty box
+      save(); render();
+    });
+  });
+  document.querySelectorAll('[data-del-media]').forEach(b=>{
+    if(b._wired) return; b._wired = true;
+    b.addEventListener('click', ()=>{
+      const arr = get(b.dataset.delMedia + '.media'), key = b.dataset.key;
+      if(arr.length < 2) return;
+      arr.splice(gal[key] || 0, 1);
+      gal[key] = Math.max(0, (gal[key] || 0) - 1);
+      save(); render();
+    });
+  });
+  document.querySelectorAll('[data-ctx]').forEach(b=>{
+    if(b._wired) return; b._wired = true;
+    b.addEventListener('click', ()=>{
+      const k = b.dataset.ctx;
+      seen.delete(k);
+      document.querySelector(`[data-popup="${k}"]`).classList.remove('gone');
+    });
+  });
+  document.querySelectorAll('[data-slot]').forEach(wireSlot);
+}
+
+/* ---------------- drag + drop media ---------------- */
+function wireSlot(slot){
+  if(slot._wired) return; slot._wired = true;
+  const path = slot.dataset.slot;
+  ['dragenter','dragover'].forEach(ev=>slot.addEventListener(ev, e=>{
+    e.preventDefault(); slot.classList.add('drag'); }));
+  ['dragleave','dragend','drop'].forEach(ev=>slot.addEventListener(ev, e=>{
+    e.preventDefault(); slot.classList.remove('drag'); }));
+  slot.addEventListener('drop', e=>{
+    const f = e.dataTransfer.files && e.dataTransfer.files[0];
+    if(f) accept(path, f);
+  });
+  slot.addEventListener('click', e=>{
+    if(e.target.classList.contains('clear')){          // keep the caption you already wrote
+      delete blobs[path];
+      set(path, { caption: (get(path)||{}).caption || '' });
+      render(); return;
+    }
+    if(slot.classList.contains('filled')) return;
+    const inp = Object.assign(document.createElement('input'),
+      {type:'file', accept:'image/*,video/mp4,video/quicktime'});
+    inp.onchange = ()=>{ if(inp.files[0]) accept(path, inp.files[0]); };
+    inp.click();
+  });
+}
+['dragover','drop'].forEach(ev=>addEventListener(ev, e=>e.preventDefault()));
+
+function accept(path, file){
+  const isVideo = file.type.startsWith('video');
+  blobs[path] = URL.createObjectURL(file);
+  set(path, { type: isVideo ? 'video' : 'image', src: 'assets/media/' + file.name,
+              caption: (get(path)||{}).caption || '' });
+  render();
+  flash('preview only — copy ' + file.name + ' into assets/media/');
+}
+
+/* ---------------- export ---------------- */
+function exportFile(){
+  const j = o => JSON.stringify(o, null, 2).replace(/\n/g,'\n  ');
+  const text =
+`/* Your content. Regenerated from the page — safe to overwrite. */
+
+window.SITE = ${j(DATA.site)};
+
+window.PROJECTS = ${j(DATA.p)};
+`;
+  Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(new Blob([text], {type:'text/javascript'})),
+    download: 'projects.js'
+  }).click();
+  flash('projects.js downloaded — swap it into your repo');
+}
+
+/* ---------------- tools ---------------- */
+const tools = document.getElementById('tools');
+document.getElementById('tools-btn').addEventListener('click', e=>{
+  e.stopPropagation(); tools.classList.toggle('open');
+});
+addEventListener('click', ()=>tools.classList.remove('open'));
+document.getElementById('preview-btn').addEventListener('click', e=>{
+  const on = !guides();
+  document.body.classList.toggle('guides', on);
+  e.target.textContent = on ? 'Preview' : 'Edit';
+  tools.classList.remove('open');
+  render();
+});
+document.getElementById('export-btn').addEventListener('click', exportFile);
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900" role="img" aria-label="Ordo">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="42%" r="62%">
+      <stop offset="0%" stop-color="#3b3d4b"/>
+      <stop offset="100%" stop-color="#2b2c36"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="900" fill="url(#glow)"/>
+
+  <!-- the mark: one ring, four seats. the amber seat is the one currently held. -->
+  <g transform="translate(600 372)" fill="none" stroke-linecap="round" stroke-width="42">
+    <circle r="150" stroke="#474956" stroke-width="42" stroke-dasharray="1 1000"/>
+    <!-- four arcs, gaps between them: each arc is a seat in the org -->
+    <path d="M 0 -150 A 150 150 0 0 1 150 0"      stroke="#e9eaee"/>
+    <path d="M 150 0 A 150 150 0 0 1 0 150"       stroke="#c2c5cd"/>
+    <path d="M 0 150 A 150 150 0 0 1 -150 0"      stroke="#9a9eaa"/>
+    <path d="M -150 0 A 150 150 0 0 1 0 -150"     stroke="#e0a458"/>
+    <!-- the handoff: the amber seat passes to the next one -->
+    <circle cx="0" cy="-150" r="15" fill="#e0a458" stroke="none"/>
+  </g>
+
+  <!-- wordmark -->
+  <text x="600" y="660" text-anchor="middle"
+        font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif"
+        font-size="132" font-weight="600" letter-spacing="-4" fill="#edeef2">Ordo</text>
+
+  <text x="600" y="726" text-anchor="middle"
+        font-family="Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif"
+        font-size="26" font-weight="500" letter-spacing="7" fill="#8a8f9c">A PAGE FOR EVERY SEAT</text>
+</svg>
